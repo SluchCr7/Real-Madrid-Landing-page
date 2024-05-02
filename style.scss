@@ -1,0 +1,706 @@
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+*{
+    padding : 0;
+    margin : 0;
+    box-sizing: border-box;
+}
+:root{
+    --title-color : #000;
+    --txt: #000;
+    --bg-color : #fff;
+    --bg-new : #F3F5F8;
+    --hover-txt : #3E31FA;
+    --light-bg :#DEE5FD;
+    --dark-blue : #2115AB;
+    --rm-color-secondary-bg: #EDEBFA;
+    --rm-color-secondary-light: #E6DDFF;
+    --rm-color-secondary-darkmode: #A991EC;
+    --rm-color-secondary-default: #8760F6;
+    --rm-color-secondary-dark: #3F18B0;
+    --rm-color-tertiary-light: #FFDF9A;
+    --rm-color-tertiary-medium: #F2BE4E;
+    --rm-color-error-light: #FFF1F6;
+    --rm-color-error-bg: #FCE3EC;
+    --rm-color-error-darkmode: #FA9ABC;
+    --rm-color-error-default: #CA024F;
+    --rm-color-error-dark: #9E0038;
+    --rm-color-success-light: #F1F9EA;
+    --rm-color-success-bg: #E0F2D1;
+    --rm-color-success-darkmode: #A2D98C;
+    --rm-color-success-default: #3D923D;
+    --rm-color-success-dark: #026C02;
+    --rm-color-warning-light: #FFF8E9;
+    --rm-color-warning-bg: #FEEDC8;
+    --rm-color-warning-darkmode: #FFDF9A;
+    --rm-color-warning-default: #EAAC30;
+    --rm-color-warning-dark: #946300;
+    .left{
+        left : 3px;
+    }
+}
+// .light_mode{
+//     --bg-color : #fff;
+//     --bg-new : #F3F5F8;
+//     --hover-txt : #3E31FA;
+//     --light-bg :#DEE5FD;
+//     --dark-blue : #2115AB;
+//     --span-txt : #000;
+//     .left{
+//         left : 3px;
+//     }
+// }
+.dark_mode{
+    --title-color : #fca311;
+    --txt : #000;
+    --bg-color : #000;
+    --span-txt : #fff;
+    --bg-new : #161a1d;
+    --hover-txt : #3E31FA;
+    --light-bg :#DEE5FD;
+    --dark-blue : #2115AB;
+    .left{
+        left : 44px;
+    }
+}
+@mixin center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+@mixin flex($direction , $align , $gap){
+    display: flex;
+    flex-direction: $direction;
+    align-items: $align;
+    gap: $gap;
+}
+@mixin font($size , $weight , $color){
+    font-size: $size;
+    font-weight: $weight;
+    color: $color;
+}
+body{
+    background-color: var(--bg-color);
+    @include flex(column,center ,10px);
+    min-height: 100vh;
+    width: 100%;
+    font-family: 'Barlow Condensed', sans-serif;
+}
+.left{
+    left: 3px;
+    transition: .7s ease;
+}
+.right{
+    left: 44px;
+    transition: .7s ease;
+}
+.Navigation{
+    @include flex(row,center ,0 );
+    justify-content: space-between;
+    width: 100%;
+    padding: 2rem 8rem 2rem 15rem;
+    .icon{
+        @include flex(row,center ,10px);
+        i{
+            font-size: 1.5rem;
+            color: var(--dark-blue);
+        }
+        .Logo{
+            img{
+                width: 80px;
+            }
+            svg{
+                // width: 80px;
+                // height: 80px;
+                path{
+                    fill: var(--span-txt);
+                    stroke: var(--span-txt);
+                    // stroke-width: 1px;
+                    // stroke-miterlimit: 10;
+                }
+            }
+        }
+    }
+    .images{
+        @include flex(row,center ,10px);
+        img{
+            width: 35px;
+            margin: 0 5px;
+        }
+    }
+    .Links{
+        @include flex(row,center ,30px );
+        .toggle{
+            width: 70px;
+            padding: 12px 10px; 
+            border: 1px solid var(--dark-blue);
+            border-radius: 20px;
+            position: relative;
+            .circle{
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                position: absolute;
+                // left: 3px;
+                top: 2px;
+                background-color: var(--dark-blue)
+            }
+        }
+        ul{
+            @include flex(row,center ,20px);
+            list-style: none;
+            li{
+                a{
+                    @include font(1.2rem,500 ,var(--span-txt));
+                    text-decoration: none;
+                    letter-spacing: 1px;
+                    text-transform: capitalize;
+                    transition: .6s ease;
+                    font-family: 'Barlow Condensed', sans-serif;
+                    &:hover{
+                        color: blue;
+                    }
+                }
+            }
+        }
+    }
+}
+.Schudel{
+    @include flex(column, start ,60px);
+    overflow-x: auto;
+    width: 100%;
+    padding: 2rem 5rem;
+    background-color: var(--bg-new);
+    .title{
+        @include font(1.3rem,700 ,var(--span-txt));
+        text-transform: uppercase;
+        position: absolute;
+    }
+    .Matches{
+        margin-top: 50px;
+        @include flex(row, center ,3rem);
+        .Match{
+            width: 250px;
+            @include flex(column, center ,10px);
+            justify-content: center;
+            text-align: center;
+            .Match_Details{
+                width: 75%;
+                @include flex(row, center ,10px);
+                justify-content: center;
+                img{
+                text-transform: capitalize;
+                    width: 50px;
+                }
+                .scoore{
+                    @include font(1rem,500 ,var(--span-txt));
+                    // @include flex(column,start ,5px )
+                }
+                h1{
+                    @include font(1.1rem,500 ,var(--span-txt));
+                }
+            }
+            .details{
+                @include flex(column, center ,5px);
+                color: var(--span-txt);
+                .staduim{
+                    @include font(1rem,500 , var(--span-txt));
+                    text-align: center;
+                    text-transform: capitalize;
+                }
+                .data{
+                    @include font(1rem,500 ,var(--span-txt));
+                    text-align: center;
+                    text-transform: capitalize;
+                }
+            }
+        }
+    }
+    &::-webkit-scrollbar{
+        display: none;
+    }
+}
+hr{
+    border: 1px solid #bdbdbd;
+    width: 70%;
+    padding: 0rem !important;
+}
+.news{
+    width: 100%;
+    @include flex(column, start ,10px);
+    padding: 2rem 8rem;
+    .new{
+        width: 100%;
+        background-color: var(--bg-new);
+        border-radius: 10px;
+        padding: 20px;
+        @include flex(row, center ,20px);
+        margin: auto;
+        .img{
+            width: 60%;
+            img{
+                width: 100%;
+            }
+            border-radius: 10px;
+        }
+        .text{
+            width: 40%;
+            p{
+                width: 70%;
+                @include font(4rem,500 , var(--span-txt)); 
+            }
+        }
+    }
+    .multi_news{
+        width: 100%;
+        .new{
+            width: 100%;
+            background-color: transparent;
+            @include flex(column,start,10px );
+            .img{   
+                width: 100%;
+                img{
+                    width: 100%;
+                    border-radius: 10px;
+                }
+            }
+            .text{
+                width: 100%;
+                p{
+                    width: 100%;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    @include font(2rem,500 ,var(--span-txt));
+                    transition: .6s ease;
+                    &:hover{
+                        color: var(--hover-txt);
+                    }
+                }
+            }
+        }
+    }
+}
+.ads{
+    width: 100%;
+    background-color: var(--bg-new);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px auto;
+    @include center()
+}
+
+.cardMatch{
+    position: absolute;
+    top: 20vh;
+    left: 40%;
+    background-color: var(--bg-new);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    width: 500px;
+    height: fit-content;
+    @include flex(column, center ,10px);
+    margin: auto;
+    justify-content: center;
+    background-color: #0F2145;
+    .iconclose{
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        color: white;
+        transition: .6s ease;
+        &:hover{
+            color: red;
+        }
+    }
+    .title{
+        @include font(1.5rem,700 ,var(--title-color));
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding-top: 10px;
+    }
+    .top_details{
+        padding: 20px;
+        width: 100%;
+        @include flex(row, center ,30px);
+        text-align: center;
+        justify-content: center;
+        img{
+            width: 100px;
+        }
+        div p{
+            @include font(1.5rem,500 ,white);
+        }
+    }
+    .bottom_details{
+        background-color: var(--bg-new);
+        width: 100%;
+        padding: 20px;
+        border-radius: 20px 20px 0 0;
+        @include flex(column, start ,10px);
+        .detail{
+            @include flex(row, start ,10px);
+        span{
+            @include font(1rem,500 ,var(--span-txt));
+            text-transform: capitalize;
+        }
+            i{
+                font-size: 1.5rem;
+                color: var(--dark-blue);
+            }
+        }
+    }
+}
+.none{
+    display: none !important;
+}
+.playerscont{
+    @include flex(column, center ,10px);
+    margin: 4rem 0;
+    background-color:var(--bg-color);
+    .title{
+        @include font(2.5rem,700 ,var(--title-color));
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .players_container{
+        @include flex(column,center ,10px );
+        position: relative;
+        .players{
+            width: 100%;
+            @include flex(row, start ,10px);
+            flex-wrap: wrap;
+            justify-content: center;
+            position: relative;
+            .player{
+                @include flex(row, start ,10px);
+                // justify-content: center;
+                width: 400px;
+                height: 400px;
+                // background-color: transparent;
+                padding: 20px;
+                // box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+                position: relative;
+                // transition: .6s ease;
+                cursor: pointer;
+                transition: .7s ease-in-out all;
+                .img{
+                    width: 100%;
+                    height: 100%;
+                    img{
+                        border-radius: 15px;
+                        // height: 100%;
+                        width: 100%;
+                        height: 100%;
+                    }
+                }
+                .details{
+                    position: absolute;
+                    top: 30px;
+                    left: 30px;
+                    @include font(1.5rem,500 ,var(--txt));
+                    width: 10%;
+                    display: none;
+                    .country{
+                        width: 30px;
+                        height: 30px;
+                        border-radius: 50%;
+                    }
+                }
+                &:hover{
+                    .details{
+                        display: block;
+                    }
+                }
+            }
+        }
+    }
+}   
+.club{
+    @include flex(column, center ,10px);
+    background-color: var(--bg-new);
+    padding: 2rem 7rem;
+    .title{
+        @include font(2.5rem,700 ,var(--title-color));
+        text-transform: uppercase;
+    }
+    .news{
+        .new{
+            background-color: transparent;
+            width: 100%;
+            @include flex(column, center ,10px);
+            .img{
+                width: 100%;
+                img{
+                    width: 100%;
+                    border-radius: 7px;
+                }
+            }
+            .text{
+                width: 100%;
+                p{
+                    width: 100%;
+                    @include font(1.5rem,500 ,var(--span-txt));
+                    text-transform: capitalize;
+                    letter-spacing: 1px;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    overflow: hidden;
+                }
+            }
+        }
+    }
+}
+.champions{
+    @include flex(column, center ,10px);
+    padding: 2rem 7rem;
+    // background-color: var(--bg-new);
+    .title{
+        @include font(2.5rem,700 ,var(--title-color));
+        text-transform: uppercase;
+    }
+    .champions_container{
+        @include flex(row, center ,5rem);
+        margin: 2rem 0;
+        width: 100%;
+        .champions_img{
+            width: 100%;
+            height: 100%;
+            img{
+                width: 100%;
+                height: 80vh;
+                border-radius: 15px;
+            }
+        }
+        .champions_txt{
+            width: 100%;
+            @include flex(column, start ,20px);
+            .champion_trophy{
+                @include flex(column, start ,10px);
+                .champion_title{
+                    @include font(1rem,500 ,var(--span-txt));
+                    text-transform: capitalize;
+                    letter-spacing: 2px;
+                }
+                .champion_trophy_img{
+                    @include flex(row, center ,10px);
+                    justify-content: space-between;
+                    background: linear-gradient(8deg, #3e31fa 19.1%, #8760f6 94.27%);
+                    padding: 12px;
+                    border-radius: 0px 20px 20px 0px;
+                    span{
+                        @include font(1.2rem,700 ,var(--bg-color));
+                    }
+                    // animation: animateWidth 5s linear ;
+                }
+                .champions{
+                    width: 400px;
+                }
+                .Liga{
+                    width: 800px;
+                }
+                .Best{
+                    width: 100px;
+                }
+                .world{
+                    width: 250px;
+                }
+                .copa{
+                    width: 550px;
+                }
+                .super{
+                    width: 350px;
+                }
+            }
+        }
+    }
+}
+.arrow{
+    background-color: var(--dark-blue);
+    color: var(--bg-color);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    @include center();
+    cursor: pointer;
+    transition: .6s ease;
+    position: absolute;
+    bottom: -55px;
+    
+    transform: translateY(-50%);
+    &:hover{
+        background-color: var(--hover-txt);
+    }   
+}
+.Video-back{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    width: 100%;
+}
+.MinScreen{
+    // display: none;
+    width: 100%;
+    min-height: 100vh;
+}
+@keyframes animateWidth {
+    0%{
+        width: 0;
+    }
+    25%{
+        width: 25%;
+    }
+    50%{
+        width: 50%;
+    }
+    75%{
+        width: 75%;
+    }
+    100%{
+        width: 100%;
+    }
+}
+footer{
+    width: 100%;
+    @include flex(column, center ,10px);
+    background-color: var(--bg-color);
+    padding: 2rem 3rem;
+    .top_footer{
+        .card{
+            @include flex(column, start ,20px);
+            span{
+                @include font(1.5rem,700 ,var(--span-txt));
+            }
+            ul{
+                @include flex(column,start ,10px );
+                li{
+                    a{
+                        @include font(1rem,500 ,var(--span-txt));
+                    }
+                }
+            }
+        }
+    }
+    hr{
+        border: 1px solid #bdbdbd;
+        width: 70%;
+        margin: 2rem 0;
+    }
+    .Mid_footer{
+        @include flex(column, center ,10px);
+        span{
+            @include font(1.5rem,700 ,var(--span-txt));
+        }
+        .footer_img{
+            @include flex(row, center ,20px);
+            img{
+                width: 200px;
+            }
+        }
+    }
+    .bottom_footer{
+        @include flex(row, center ,10px);
+        justify-content: space-between;
+        width: 100%;
+        padding: 0 5rem;
+        .Logo{
+            svg{
+                path{
+                    fill: var(--span-txt);
+                    stroke: var(--span-txt);
+                }
+                width: 60px;
+                cursor: pointer;
+                transition: .6s ease;
+                &:hover{
+                    transform: scale(1.2);
+                }
+            }
+        }
+        .Social{
+            @include flex(row, center ,20px);
+            i{
+                font-size: 1.5rem;
+                color: var(--span-txt);
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .Navigation{
+        padding: 2rem 0;
+        .Links{
+            display: none;
+        }
+    }
+    .news{
+        padding: 2rem 0;
+        .new{
+            flex-direction: column;
+            .img{
+                width: 100%;
+
+            }
+            .text{
+                width: 100%;
+                p{
+                    width: 100%;
+                    text-align: center;
+                    font-size: 1.5rem;
+                }
+            }
+        }
+    }
+    footer .Mid_footer .footer_img {
+        flex-direction: column;
+        margin-top: 20px;
+    }   
+    footer .bottom_footer {
+        padding: 0;
+    }
+    .champions .champions_container{
+        flex-direction: column;
+    }
+    .champions .champions_container .champions_img{
+        width: 100%;
+    }
+    .champions .champions_container .champions_txt{
+        width: 100%;
+    }
+    .champions .champions_container .champions_txt .champion_trophy .Liga {
+        width: 415px;
+    }
+    .champions .champions_container .champions_txt .champion_trophy .champions {
+        width: 280px;
+    }
+    .champions .champions_container .champions_txt .champion_trophy .copa {
+        width: 320px;
+    }   
+    .champions .champions_container .champions_txt .champion_trophy .super {
+        width: 260px;
+    }
+    .champions .champions_container .champions_txt .champion_trophy .world {
+        width: 200px;
+    }
+    .club .news .new{
+        width: 100%;
+        align-items: center;
+        .text{
+            width: 86vw;
+        }
+    }
+    .club .news .new .img{
+        width: max-content;
+    }
+    .club .news .new .img img{
+        width: 100%;
+    }
+    ::-webkit-scrollbar {
+        display: none;
+    }
+}
