@@ -25,12 +25,7 @@ export const PlayerList = () => {
     fetch("/data.json")
       .then((res) => res.json())
       .then((data) => {
-         const enriched = data.map((p: Player) => ({
-           ...p,
-           Goals: Math.floor(Math.random() * 20) + 5,
-           Assists: Math.floor(Math.random() * 15) + 2,
-         }));
-         setPlayers(enriched);
+         setPlayers(data);
       })
       .catch((err) => console.error(err));
   }, []);
@@ -38,19 +33,29 @@ export const PlayerList = () => {
   const visiblePlayers = showAll ? players : players.slice(0, 8);
 
   return (
-    <section className="relative w-full py-40 px-4 md:px-20 bg-background transition-colors duration-500 overflow-hidden">
-      {/* Background Decorative Text */}
-      <h3 className="absolute bottom-0 left-0 text-[25vw] font-black text-foreground/[0.03] uppercase select-none leading-none pointer-events-none italic translate-y-20">SQUAD</h3>
+    <section className="relative w-full py-60 px-4 md:px-20 bg-background transition-colors duration-500 overflow-hidden">
+      {/* Background Decorative Text - Ultra Big Editorial Style */}
+      <h3 className="absolute -top-20 left-0 text-[35vw] font-black text-foreground/[0.02] uppercase select-none leading-none pointer-events-none italic tracking-tighter">
+        SQUAD
+      </h3>
       
-      <div className="max-w-7xl mx-auto flex flex-col items-center gap-20 relative z-10">
-        <div className="text-center flex flex-col items-center gap-4">
-          <span className="text-rm-gold font-black uppercase tracking-[0.5em] text-[10px] italic mb-2 block underline underline-offset-8">First Team</span>
-          <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-foreground italic">
-            World Class <span className="text-gold">Legends</span>
-          </h2>
-          <p className="max-w-xl text-foreground/60 font-medium mt-6 text-lg leading-relaxed">
-            The elite athletes carrying the iconic white jersey. <br className="hidden md:block"/> 
-            Excellence in every position, glory in every soul.
+      <div className="max-w-[1800px] mx-auto flex flex-col gap-32 relative z-10">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12">
+          <div className="flex flex-col gap-6 max-w-4xl">
+            <motion.div 
+               initial={{ opacity: 0, x: -20 }}
+               whileInView={{ opacity: 1, x: 0 }}
+               className="flex items-center gap-4"
+            >
+              <div className="w-16 h-[1px] bg-rm-gold" />
+              <span className="text-rm-gold font-black uppercase tracking-[0.5em] text-[11px] italic">Elite Selection</span>
+            </motion.div>
+            <h2 className="text-7xl md:text-[10rem] font-black uppercase tracking-tighter text-foreground italic leading-[0.85]">
+              THE WHITE <br /> <span className="text-gold">LEGENDS</span>
+            </h2>
+          </div>
+          <p className="max-w-md text-foreground/40 font-medium text-lg leading-relaxed italic border-l border-foreground/10 pl-10 hidden lg:block">
+            The athletes defining an era. Carrying the legacy of 124 years of excellence into every match at the Santiago Bernabéu.
           </p>
         </div>
 

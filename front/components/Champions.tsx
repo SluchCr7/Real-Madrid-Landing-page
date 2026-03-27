@@ -24,19 +24,28 @@ const trophies: Trophy[] = [
 
 export const Champions = () => {
   return (
-    <section className="relative w-full py-40 px-4 md:px-20 bg-background transition-colors duration-500 overflow-hidden">
-      {/* Background Decorative Text */}
-      <h3 className="absolute top-0 left-0 text-[18vw] font-black text-foreground/[0.03] uppercase select-none leading-none pointer-events-none italic">TROPHIES</h3>
+    <section className="relative w-full py-60 px-4 md:px-20 bg-background transition-colors duration-500 overflow-hidden">
+      {/* Background Ghost Text */}
+      <h3 className="absolute top-0 left-0 text-[28vw] font-black text-foreground/[0.025] uppercase select-none leading-none pointer-events-none italic tracking-tighter">GLORY</h3>
 
-      <div className="max-w-7xl mx-auto flex flex-col gap-32 relative z-10">
-        <div className="flex flex-col items-center text-center gap-6">
-          <span className="text-rm-gold font-black uppercase tracking-[0.5em] text-[10px] italic underline underline-offset-8">A Legacy Unmatched</span>
-          <h2 className="text-6xl md:text-[7rem] font-black uppercase tracking-tighter text-foreground italic leading-none">
-            The <span className="text-gold">Trophy</span> Room
-          </h2>
-          <p className="max-w-2xl text-foreground/60 font-medium mt-6 text-lg leading-relaxed">
-            Real Madrid is more than a football club; it is a global icon of sporting excellence. 
-            Explore the legendary history and the symbols of our eternal glory.
+      <div className="max-w-[1800px] mx-auto flex flex-col gap-32 relative z-10">
+        {/* Editorial Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12">
+          <div className="flex flex-col gap-6">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-4"
+            >
+              <div className="w-16 h-[1px] bg-rm-gold" />
+              <span className="text-rm-gold font-black uppercase tracking-[0.5em] text-[11px] italic">A Legacy Unmatched</span>
+            </motion.div>
+            <h2 className="text-7xl md:text-[10rem] font-black uppercase tracking-tighter text-foreground italic leading-[0.85]">
+              THE TROPHY <br /><span className="text-gold">ROOM</span>
+            </h2>
+          </div>
+          <p className="max-w-md text-foreground/40 font-medium text-lg leading-relaxed italic border-l border-foreground/10 pl-10 hidden lg:block">
+            Real Madrid is more than a football club. Explore the legendary history and symbols of our eternal glory.
           </p>
         </div>
 

@@ -3,6 +3,7 @@ import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Clock, MessageCircle, TrendingUp } from "lucide-react";
+import Link from "next/link";
 
 interface NewsItem {
   id: number;
@@ -68,18 +69,28 @@ const newsData: NewsItem[] = [
 
 export const NewsGrid = () => {
   return (
-    <section className="w-full py-40 bg-background transition-colors duration-500 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 md:px-20 flex flex-col gap-20">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
-           <div className="flex flex-col gap-4">
-             <span className="text-rm-gold font-black uppercase tracking-[0.5em] text-[10px] italic border-b border-rm-gold/40 pb-2 w-fit">Latest Updates</span>
-             <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-foreground italic leading-none">
-               The Inside <span className="text-gold">Story</span>
+    <section className="w-full py-60 bg-background transition-colors duration-500 overflow-hidden relative">
+      {/* Editorial Background Ghost Text */}
+      <h3 className="absolute top-0 right-0 text-[28vw] font-black text-foreground/[0.025] uppercase select-none leading-none pointer-events-none italic tracking-tighter">NEWS</h3>
+
+      <div className="max-w-[1800px] mx-auto px-4 md:px-20 flex flex-col gap-24 relative z-10">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12">
+           <div className="flex flex-col gap-6">
+             <motion.div
+               initial={{ opacity: 0, x: -20 }}
+               whileInView={{ opacity: 1, x: 0 }}
+               className="flex items-center gap-4"
+             >
+               <div className="w-16 h-[1px] bg-rm-gold" />
+               <span className="text-rm-gold font-black uppercase tracking-[0.5em] text-[11px] italic">Latest Updates</span>
+             </motion.div>
+             <h2 className="text-7xl md:text-[10rem] font-black uppercase tracking-tighter text-foreground italic leading-[0.85]">
+               THE INSIDE <br /><span className="text-gold">STORY</span>
              </h2>
            </div>
-           <button className="flex items-center gap-4 px-10 py-5 bg-card border border-border-subtle hover:border-rm-gold/40 hover:bg-foreground hover:text-background transition-all rounded-3xl group text-xs font-black uppercase tracking-widest italic shadow-premium">
+           <Link href="/news" className="flex items-center gap-4 px-12 py-6 bg-card border border-border-subtle hover:border-rm-gold/40 hover:bg-foreground hover:text-background transition-all rounded-3xl group text-xs font-black uppercase tracking-widest italic shadow-premium">
               View All News <ArrowUpRight className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-           </button>
+           </Link>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">

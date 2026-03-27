@@ -10,7 +10,11 @@
   --color-surface: var(--bg-surface);
   --color-card: var(--bg-card);
   --color-border-subtle: var(--border-subtle);
-  
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+
+  --color-hero-overlay: var(--hero-overlay);
+  --color-hero-overlay-strong: var(--hero-overlay-strong);
   --font-barlow: "Barlow Condensed", sans-serif;
   --font-outfit: "Outfit", sans-serif;
 
@@ -21,19 +25,33 @@
 :root {
   --background: #ffffff;
   --foreground: #0a0e1a;
+
   --bg-surface: #f8fafc;
   --bg-card: #ffffff;
-  --border-subtle: rgba(10, 14, 26, 0.05);
-  --hero-text: #0a0e1a;
+
+  --hero-overlay: rgba(10, 14, 26, 0.4);
+  --hero-overlay-strong: rgba(10, 14, 26, 0.65);
+
+  --text-primary: #0a0e1a;
+  --text-secondary: rgba(10, 14, 26, 0.7);
+
+  --border-subtle: rgba(10, 14, 26, 0.08);
 }
 
 .dark {
   --background: #0a0e1a;
   --foreground: #ffffff;
+
   --bg-surface: #111827;
   --bg-card: #1f2937;
-  --border-subtle: rgba(255, 255, 255, 0.1);
-  --hero-text: #ffffff;
+
+  --hero-overlay: rgba(0, 0, 0, 0.5);
+  --hero-overlay-strong: rgba(0, 0, 0, 0.75);
+
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.75);
+
+  --border-subtle: rgba(255, 255, 255, 0.12);
 }
 
 @layer base {
@@ -42,13 +60,20 @@
     margin: 0;
     padding: 0;
   }
+
   body {
     background: var(--background);
     color: var(--foreground);
     @apply font-outfit transition-colors duration-500 selection:bg-rm-gold selection:text-white;
     overflow-x: hidden;
   }
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-barlow;
   }
 }
@@ -66,16 +91,21 @@
   }
 
   .glass {
-    @apply backdrop-blur-md bg-white/10 border border-white/20;
+    @apply backdrop-blur-md border;
+    background: color-mix(in oklab, var(--background) 30%, transparent);
+    border-color: var(--border-subtle);
   }
 
   .glass-dark {
-    @apply backdrop-blur-md bg-black/40 border border-white/10;
+    @apply backdrop-blur-md border;
+    background: color-mix(in oklab, var(--background) 10%, black);
+    border-color: var(--border-subtle);
   }
-  
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;

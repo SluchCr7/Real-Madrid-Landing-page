@@ -112,7 +112,7 @@ export const MatchList = () => {
         GLORY
       </h3>
 
-      <div className="max-w-7xl mx-auto flex flex-col gap-20 relative z-10">
+      <div className="max-w-[1800px] mx-auto flex flex-col gap-20 relative z-10">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-12">
           <div className="flex flex-col gap-6">
             <motion.div

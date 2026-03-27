@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Barlow_Condensed, Outfit } from "next/font/google";
 import "./globals.css";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 
 const barlowCondensed = Barlow_Condensed({
   variable: "--font-barlow",
@@ -28,8 +30,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${barlowCondensed.variable} ${outfit.variable} h-full antialiased selection:bg-rm-gold selection:text-white`}>
-      <body className="min-h-full flex flex-col transition-colors duration-500">{children}</body>
+    <html lang="en" className={`${barlowCondensed.variable} ${outfit.variable} h-full antialiased selection:bg-rm-gold selection:text-white dark`}>
+      <body className="min-h-full flex flex-col transition-colors duration-500">
+        <Navbar />
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }
+

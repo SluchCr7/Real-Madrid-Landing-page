@@ -11,13 +11,35 @@ import {
 } from "react-icons/fa";
 import { RMLogo } from "./RMLogo";
 import { Download, Globe, ShieldCheck, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 const footerData = {
-  Football: ["First team", "Academy", "Woman football"],
-  Basketball: ["Basketball First team"],
-  "The Club": ["Schedule", "Transparency", "Sponsors", "Values", "Honors", "History", "Fan Club", "Barnabeu Stadium", "Real Madrid City", "WiZink Center", "Contact"],
-  "Bernabeu Stadium": ["RMTV live", "News", "Foundation Real Madrid", "RM Next", "RM Graduate School"],
-  Madridistas: ["Hospitality", "Shop", "Tour", "Tickets", "RM Play"],
+  Football: [
+    { name: "First team", href: "/squad" },
+    { name: "Matches", href: "/matches" },
+    { name: "Academy", href: "#" },
+    { name: "Woman football", href: "#" }
+  ],
+  "The Club": [
+    { name: "Values", href: "/about" },
+    { name: "Honors", href: "/trophies" },
+    { name: "History", href: "/about" },
+    { name: "Fan Club", href: "#" },
+    { name: "Bernabeu Stadium", href: "/stadium" },
+    { name: "Contact", href: "/contact" }
+  ],
+  "News & Media": [
+    { name: "Latest News", href: "/news" },
+    { name: "RMTV live", href: "#" },
+    { name: "Foundation", href: "#" },
+    { name: "RM Play", href: "#" }
+  ],
+  Madridistas: [
+    { name: "Hospitality", href: "#" },
+    { name: "Shop", href: "#" },
+    { name: "Tour", href: "/stadium" },
+    { name: "Tickets", href: "/matches" }
+  ],
 };
 
 export const Footer = () => {
@@ -30,7 +52,7 @@ export const Footer = () => {
 
       <div className="max-w-7xl mx-auto flex flex-col gap-24 relative z-10">
         {/* Top Footer Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-16 w-full">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-16 w-full">
           {Object.entries(footerData).map(([category, links]) => (
             <div key={category} className="flex flex-col gap-8">
               <span className="text-[10px] font-black uppercase text-rm-gold tracking-[0.4em] italic flex items-center gap-2 group cursor-default">
@@ -39,11 +61,11 @@ export const Footer = () => {
               </span>
               <ul className="flex flex-col gap-4">
                 {links.map((link) => (
-                  <li key={link}>
-                    <a href="#" className="text-sm font-medium hover:text-rm-gold transition-all opacity-40 hover:opacity-100 italic tracking-wide flex items-center gap-2 group">
+                  <li key={link.name}>
+                    <Link href={link.href} className="text-sm font-medium hover:text-rm-gold transition-all opacity-40 hover:opacity-100 italic tracking-wide flex items-center gap-2 group">
                       <ArrowRight className="w-3 h-3 opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
-                      {link}
-                    </a>
+                      {link.name}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -74,13 +96,13 @@ export const Footer = () => {
         {/* Brand & Social Section */}
         <div className="flex flex-col lg:flex-row items-center justify-between w-full gap-16 pt-12 border-t border-border-subtle">
           <div className="flex flex-col sm:flex-row items-center gap-8 lg:gap-12">
-            <div className="group flex items-center gap-6 cursor-pointer hover:scale-105 transition-all duration-500">
+            <Link href="/" className="group flex items-center gap-6 cursor-pointer hover:scale-105 transition-all duration-500">
                 <RMLogo className="w-20 h-20 text-rm-gold drop-shadow-lg" />
                 <div className="flex flex-col -gap-1">
                 <span className="text-3xl font-black uppercase tracking-tighter leading-none italic text-foreground">Real Madrid</span>
                 <span className="text-[10px] uppercase tracking-[0.5em] text-foreground/40 font-black italic mt-1">Club de Fútbol</span>
                 </div>
-            </div>
+            </Link>
             
             <div className="hidden sm:block h-12 w-[1px] bg-border-subtle" />
             
@@ -122,3 +144,4 @@ export const Footer = () => {
     </footer>
   );
 };
+
