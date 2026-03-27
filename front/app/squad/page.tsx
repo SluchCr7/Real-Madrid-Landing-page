@@ -28,19 +28,19 @@ export default function SquadPage() {
     fetch("/data.json")
       .then((res) => res.json())
       .then((data) => {
-         setPlayers(data);
+        setPlayers(data);
       })
       .catch((err) => console.error(err));
   }, []);
 
-  const filteredPlayers = activeCategory === "All" 
-    ? players 
+  const filteredPlayers = activeCategory === "All"
+    ? players
     : players.filter(p => p.Position === activeCategory || (activeCategory === "Midfield" && p.Position === "Midfield"));
 
   return (
     <div className="flex flex-col w-full bg-background transition-colors duration-500 min-h-screen">
-      <PageHero 
-        title="The First Team" 
+      <PageHero
+        title="The First Team"
         subtitle="The elite squad representing the crest and the history of the world's most successful club."
         backgroundImage="https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2000&auto=format&fit=crop"
         category="Season 2025/26"
@@ -53,11 +53,10 @@ export default function SquadPage() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all italic border ${
-                activeCategory === cat 
-                  ? "bg-rm-gold text-rm-blue-dark border-rm-gold shadow-gold" 
+              className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all italic border ${activeCategory === cat
+                  ? "bg-rm-gold text-rm-blue-dark border-rm-gold shadow-gold"
                   : "bg-card text-foreground/40 border-border-subtle hover:border-rm-gold/40 hover:text-foreground"
-              }`}
+                }`}
             >
               {cat === "Midfield" ? "Midfielders" : cat === "All" ? "All Players" : `${cat}s`}
             </button>
@@ -65,7 +64,7 @@ export default function SquadPage() {
         </div>
 
         {/* Squad Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
           <AnimatePresence mode="popLayout">
             {filteredPlayers.map((player, idx) => (
               <motion.div
@@ -84,7 +83,7 @@ export default function SquadPage() {
                     fill
                     className="object-cover object-top transition-all duration-700 group-hover:scale-110 group-hover:brightness-50"
                   />
-                  
+
                   {/* Number Overlay */}
                   <div className="absolute top-6 right-6 text-6xl font-black text-white/10 group-hover:text-gold/20 transition-colors uppercase italic select-none">
                     {player.number}
@@ -95,15 +94,15 @@ export default function SquadPage() {
                     <div className="flex flex-col gap-1 transition-transform duration-500 group-hover:-translate-y-4">
                       <span className="text-rm-gold font-black text-xs uppercase tracking-widest italic">{player.Position}</span>
                       <h3 className="text-3xl font-black text-white uppercase italic tracking-tighter leading-none">{player.name}</h3>
-                      
+
                       <div className="flex items-center gap-4 mt-2 h-0 group-hover:h-auto overflow-hidden opacity-0 group-hover:opacity-100 transition-all duration-500">
                         <div className="flex items-center gap-2">
-                           <Target className="w-3 h-3 text-rm-gold" />
-                           <span className="text-white/60 text-[10px] uppercase font-black">{player.Goals} Goals</span>
+                          <Target className="w-3 h-3 text-rm-gold" />
+                          <span className="text-white/60 text-[10px] uppercase font-black">{player.Goals} Goals</span>
                         </div>
                         <div className="flex items-center gap-2">
-                           <TrendingUp className="w-3 h-3 text-rm-gold" />
-                           <span className="text-white/60 text-[10px] uppercase font-black">{player.Assists} Assists</span>
+                          <TrendingUp className="w-3 h-3 text-rm-gold" />
+                          <span className="text-white/60 text-[10px] uppercase font-black">{player.Assists} Assists</span>
                         </div>
                       </div>
                     </div>
