@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-rm-gold: #c1a058;
+  --color-rm-blue: #0F2145;
+  --color-rm-blue-dark: #0a0e1a;
+  --color-rm-purple: #3e31fa;
+  --color-surface: var(--bg-surface);
+  --color-card: var(--bg-card);
+  --color-border-subtle: var(--border-subtle);
+  
+  --font-barlow: "Barlow Condensed", sans-serif;
+  --font-outfit: "Outfit", sans-serif;
+
+  --shadow-premium: 0 20px 50px rgba(0, 0, 0, 0.1);
+  --shadow-gold: 0 10px 30px rgba(193, 160, 88, 0.3);
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #0a0e1a;
+  --bg-surface: #f8fafc;
+  --bg-card: #ffffff;
+  --border-subtle: rgba(10, 14, 26, 0.05);
+  --hero-text: #0a0e1a;
+}
+
+.dark {
+  --background: #0a0e1a;
+  --foreground: #ffffff;
+  --bg-surface: #111827;
+  --bg-card: #1f2937;
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --hero-text: #ffffff;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    @apply font-outfit transition-colors duration-500 selection:bg-rm-gold selection:text-white;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-barlow;
+  }
+}
+
+@layer components {
+  .gold-gradient {
+    background: linear-gradient(135deg, #c1a058 0%, #ecd4a1 50%, #c1a058 100%);
+  }
+
+  .text-gold {
+    background: linear-gradient(135deg, #c1a058 0%, #ecd4a1 50%, #c1a058 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .glass {
+    @apply backdrop-blur-md bg-white/10 border border-white/20;
+  }
+
+  .glass-dark {
+    @apply backdrop-blur-md bg-black/40 border border-white/10;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
