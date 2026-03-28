@@ -1,41 +1,24 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Target, TrendingUp, Award, Star } from "lucide-react";
+import { Target, TrendingUp, AlertCircle, Loader2 } from "lucide-react";
 import { PageHero } from "@/components/PageHero";
-
-interface Player {
-  id: number;
-  name: string;
-  number: number;
-  image: string;
-  country: string;
-  Position: string;
-  Age: number | string;
-  nationality: string;
-  Goals?: number;
-  Assists?: number;
-}
+import useTeam from "@/hooks/useTeam";
 
 const CATEGORIES = ["Goalkeeper", "Defender", "Midfield", "Forward"];
 
 export default function SquadPage() {
-  const [players, setPlayers] = useState<Player[]>([]);
+  const { squad, loading: isLoading, error } = useTeam();
   const [activeCategory, setActiveCategory] = useState<string>("All");
 
-  useEffect(() => {
-    fetch("/data.json")
-      .then((res) => res.json())
-      .then((data) => {
-        setPlayers(data);
-      })
-      .catch((err) => console.error(err));
-  }, []);
-
   const filteredPlayers = activeCategory === "All"
-    ? players
-    : players.filter(p => p.Position === activeCategory || (activeCategory === "Midfield" && p.Position === "Midfield"));
+    ? squad
+    : squad.filter(p =>
+      p.Position === activeCategory ||
+      (activeCategory === "Midfield" && (p.Position === "Midfielder" || p.Position === "Midfield")) ||
+      (activeCategory === "Forward" && p.Position === "Forward")
+    );
 
   return (
     <div className="flex flex-col w-full bg-background transition-colors duration-500 min-h-screen">
@@ -54,8 +37,8 @@ export default function SquadPage() {
               key={cat}
               onClick={() => setActiveCategory(cat)}
               className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all italic border ${activeCategory === cat
-                  ? "bg-rm-gold text-rm-blue-dark border-rm-gold shadow-gold"
-                  : "bg-card text-foreground/40 border-border-subtle hover:border-rm-gold/40 hover:text-foreground"
+                ? "bg-rm-gold text-rm-blue-dark border-rm-gold shadow-gold"
+                : "bg-card text-foreground/40 border-border-subtle hover:border-rm-gold/40 hover:text-foreground"
                 }`}
             >
               {cat === "Midfield" ? "Midfielders" : cat === "All" ? "All Players" : `${cat}s`}
@@ -63,65 +46,83 @@ export default function SquadPage() {
           ))}
         </div>
 
+        {/* State Handling */}
+        {isLoading && (
+          <div className="flex flex-col items-center justify-center py-40">
+            <Loader2 className="w-16 h-16 animate-spin text-rm-gold mb-6" />
+            <span className="text-foreground/40 font-bold uppercase tracking-widest mt-4">Preparing Squad...</span>
+          </div>
+        )}
+
+        {error && !isLoading && (
+          <div className="flex flex-col items-center justify-center py-40">
+            <AlertCircle className="w-16 h-16 text-red-500 mb-6" />
+            <span className="text-foreground/40 font-bold uppercase tracking-widest mt-4">Failed to load squad data</span>
+            <span className="text-foreground/20 text-sm mt-2">{error}</span>
+          </div>
+        )}
+
         {/* Squad Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
-          <AnimatePresence mode="popLayout">
-            {filteredPlayers.map((player, idx) => (
-              <motion.div
-                key={player.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.4, delay: idx * 0.05 }}
-                className="group relative h-[450px] cursor-pointer"
-              >
-                <div className="absolute inset-0 bg-card rounded-[40px] overflow-hidden border border-border-subtle shadow-premium transition-all duration-500 group-hover:shadow-2xl group-hover:border-rm-gold/40">
-                  <Image
-                    src={player.image}
-                    alt={player.name}
-                    fill
-                    className="object-cover object-top transition-all duration-700 group-hover:scale-110 group-hover:brightness-50"
-                  />
+        {!isLoading && !error && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
+            <AnimatePresence mode="popLayout">
+              {filteredPlayers.map((player, idx) => (
+                <motion.div
+                  key={player.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.4, delay: idx * 0.05 }}
+                  className="group relative h-[450px] cursor-pointer"
+                >
+                  <div className="absolute inset-0 bg-card rounded-[40px] overflow-hidden border border-border-subtle shadow-premium transition-all duration-500 group-hover:shadow-2xl group-hover:border-rm-gold/40">
+                    <Image
+                      src={player.image}
+                      alt={player.name}
+                      fill
+                      className="object-cover object-top transition-all duration-700 group-hover:scale-110 group-hover:brightness-50"
+                    />
 
-                  {/* Number Overlay */}
-                  <div className="absolute top-6 right-6 text-6xl font-black text-white/10 group-hover:text-gold/20 transition-colors uppercase italic select-none">
-                    {player.number}
-                  </div>
+                    {/* Number Overlay */}
+                    <div className="absolute top-6 right-6 text-6xl font-black text-white/10 group-hover:text-gold/20 transition-colors uppercase italic select-none">
+                      {player.number}
+                    </div>
 
-                  {/* Info Box */}
-                  <div className="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-rm-blue-dark/90 via-rm-blue-dark/40 to-transparent">
-                    <div className="flex flex-col gap-1 transition-transform duration-500 group-hover:-translate-y-4">
-                      <span className="text-rm-gold font-black text-xs uppercase tracking-widest italic">{player.Position}</span>
-                      <h3 className="text-3xl font-black text-white uppercase italic tracking-tighter leading-none">{player.name}</h3>
+                    {/* Info Box */}
+                    <div className="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-rm-blue-dark/90 via-rm-blue-dark/40 to-transparent">
+                      <div className="flex flex-col gap-1 transition-transform duration-500 group-hover:-translate-y-4">
+                        <span className="text-rm-gold font-black text-xs uppercase tracking-widest italic">{player.Position}</span>
+                        <h3 className="text-3xl font-black text-white uppercase italic tracking-tighter leading-none">{player.name}</h3>
 
-                      <div className="flex items-center gap-4 mt-2 h-0 group-hover:h-auto overflow-hidden opacity-0 group-hover:opacity-100 transition-all duration-500">
-                        <div className="flex items-center gap-2">
-                          <Target className="w-3 h-3 text-rm-gold" />
-                          <span className="text-white/60 text-[10px] uppercase font-black">{player.Goals} Goals</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <TrendingUp className="w-3 h-3 text-rm-gold" />
-                          <span className="text-white/60 text-[10px] uppercase font-black">{player.Assists} Assists</span>
+                        <div className="flex items-center gap-4 mt-2 h-0 group-hover:h-auto overflow-hidden opacity-0 group-hover:opacity-100 transition-all duration-500">
+                          <div className="flex items-center gap-2">
+                            <Target className="w-3 h-3 text-rm-gold" />
+                            <span className="text-white/60 text-[10px] uppercase font-black">{player.Goals} Goals</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <TrendingUp className="w-3 h-3 text-rm-gold" />
+                            <span className="text-white/60 text-[10px] uppercase font-black">{player.Assists} Assists</span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Nationality Badge */}
-                  <div className="absolute top-6 left-6 flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <div className="w-4 h-3 relative rounded-sm overflow-hidden">
-                      <Image src={player.country} alt={player.nationality} fill className="object-cover" />
+                    {/* Nationality Badge */}
+                    <div className="absolute top-6 left-6 flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                      <div className="w-4 h-3 relative rounded-sm overflow-hidden">
+                        <Image src={player.country} alt={player.nationality} fill className="object-cover" />
+                      </div>
+                      <span className="text-[8px] font-black uppercase text-white/80 tracking-widest">{player.nationality}</span>
                     </div>
-                    <span className="text-[8px] font-black uppercase text-white/80 tracking-widest">{player.nationality}</span>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
 
-        {filteredPlayers.length === 0 && (
+        {!isLoading && !error && filteredPlayers.length === 0 && (
           <div className="flex flex-col items-center justify-center py-40">
             <span className="text-foreground/20 text-8xl font-black italic">NOMADS</span>
             <p className="text-foreground/40 font-bold uppercase tracking-widest mt-4">No players found in this category</p>
