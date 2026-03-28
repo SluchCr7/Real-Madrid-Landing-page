@@ -1,11 +1,11 @@
 "use client";
-import React, { useState } from "react";
-import Image from "next/image";
+import React, { useState, useRef } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-import { X, MapPin, Trophy as TrophyIcon, Calendar, Clock, Timer, User, ArrowRight, Share2, Info, ChevronRight, Ticket } from "lucide-react";
+import { X, MapPin, Trophy as TrophyIcon, Calendar, Clock, Timer, User, ArrowRight, ArrowLeft, Share2, ChevronRight, Ticket, ArrowUpRight } from "lucide-react";
+import useMatches from "@/hooks/useMatches";
 
-interface Match {
-  id: number;
+export interface DisplayMatch {
+  id: string | number;
   homeTeam: string;
   homeLogo: string;
   awayTeam: string;
@@ -18,7 +18,7 @@ interface Match {
   isLive?: boolean;
 }
 
-const matches: Match[] = [
+const fallbackMatches: DisplayMatch[] = [
   {
     id: 1,
     homeTeam: "Real Madrid",
@@ -83,7 +83,48 @@ const matches: Match[] = [
 ];
 
 export const MatchList = () => {
-  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
+  const [selectedMatch, setSelectedMatch] = useState<DisplayMatch | null>(null);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const { matches, loading } = useMatches();
+
+  // Combine past and future matches seamlessly
+  const apiFormattedMatches: DisplayMatch[] = (() => {
+    if (!matches || matches.length === 0) return [];
+
+    // Sort logic (API generally returns them chronologically, but just in case)
+    const finished = matches.filter(m => m.status === 'FINISHED' || m.status === 'AWARDED').slice(-4);
+    const upcoming = matches.filter(m => m.status !== 'FINISHED' && m.status !== 'AWARDED').slice(0, 6);
+
+    const combined = [...finished, ...upcoming];
+
+    return combined.map(m => ({
+      id: m.id,
+      homeTeam: m.homeTeam.name,
+      homeLogo: m.homeTeam.crest,
+      awayTeam: m.awayTeam.name,
+      awayLogo: m.awayTeam.crest,
+      score: m.status === 'FINISHED' || m.status === 'LIVE' ? `${m.score.fullTime.home ?? 0} : ${m.score.fullTime.away ?? 0}` : "VS",
+      stadium: m.area?.name || "Santiago Bernabéu",
+      date: new Date(m.utcDate).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' }),
+      time: new Date(m.utcDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      competition: m.competition.name,
+      isLive: m.status === 'LIVE' || m.status === 'IN_PLAY' || m.status === 'PAUSED'
+    }));
+  })();
+
+  const displayMatches = apiFormattedMatches.length > 0 ? apiFormattedMatches : fallbackMatches;
+
+  const scrollLeft = () => {
+    if (sliderRef.current) {
+      sliderRef.current.scrollBy({ left: -420, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (sliderRef.current) {
+      sliderRef.current.scrollBy({ left: 420, behavior: 'smooth' });
+    }
+  };
 
   const container: Variants = {
     hidden: { opacity: 0 },
@@ -96,8 +137,8 @@ export const MatchList = () => {
   };
 
   const item: Variants = {
-    hidden: { opacity: 0, y: 40, scale: 0.98 },
-    show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 80, damping: 15 } },
+    hidden: { opacity: 0, x: 40, scale: 0.95 },
+    show: { opacity: 1, x: 0, scale: 1, transition: { type: "spring", stiffness: 80, damping: 15 } },
   };
 
   return (
@@ -128,101 +169,131 @@ export const MatchList = () => {
             </h2>
           </div>
 
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="group flex items-center gap-4 px-10 py-5 bg-card border border-border-subtle rounded-2xl shadow-premium hover:border-rm-gold/50 transition-all"
-          >
-            <span className="text-xs font-black uppercase tracking-widest text-text-primary italic">Full Season Access</span>
-            <div className="w-8 h-8 rounded-full bg-rm-gold/10 flex items-center justify-center group-hover:bg-rm-gold transition-colors">
-              <ChevronRight className="w-4 h-4 text-rm-gold group-hover:text-rm-blue-dark" />
+          <div className="flex items-center gap-8">
+            {/* Slider Controls */}
+            <div className="hidden md:flex gap-4">
+              <button onClick={scrollLeft} className="w-16 h-16 rounded-full border border-border-subtle bg-card flex items-center justify-center hover:bg-rm-gold transition-all hover:text-rm-blue-dark shadow-premium hover:shadow-gold hover:scale-105 active:scale-95">
+                <ArrowLeft className="w-6 h-6" />
+              </button>
+              <button onClick={scrollRight} className="w-16 h-16 rounded-full border border-border-subtle bg-card flex items-center justify-center hover:bg-rm-gold transition-all hover:text-rm-blue-dark shadow-premium hover:shadow-gold hover:scale-105 active:scale-95">
+                <ArrowRight className="w-6 h-6" />
+              </button>
             </div>
-          </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="group flex items-center gap-4 px-10 py-5 bg-card border border-border-subtle rounded-2xl shadow-premium hover:border-rm-gold/50 transition-all"
+            >
+              <span className="text-xs font-black uppercase tracking-widest text-text-primary italic">Full Season Access</span>
+              <div className="w-8 h-8 rounded-full bg-rm-gold/10 flex items-center justify-center group-hover:bg-rm-gold transition-colors">
+                <ChevronRight className="w-4 h-4 text-rm-gold group-hover:text-rm-blue-dark" />
+              </div>
+            </motion.button>
+          </div>
         </div>
 
         {/* Feature/Live Indicator if any */}
-        {matches.some(m => m.isLive) && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-red-600/10 border border-red-600/20 backdrop-blur-3xl p-6 rounded-[30px] flex items-center gap-6 self-start mb-4"
-          >
-            <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-            </span>
-            <span className="text-xs font-black text-red-500 uppercase tracking-[0.4em] italic">Action is live at Allianz Arena — Tune in now</span>
-          </motion.div>
-        )}
+        <AnimatePresence>
+          {displayMatches.some(m => m.isLive) && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-red-600/10 border border-red-600/20 backdrop-blur-3xl p-6 rounded-[30px] flex items-center gap-6 self-start mb-4 shadow-xl shadow-red-600/5"
+            >
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+              </span>
+              <span className="text-xs font-black text-red-500 uppercase tracking-[0.4em] italic">Action is live — Tune in now</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
+        {/* CSS Scrollbar Hiding styles embedded directly */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+          .no-scrollbar::-webkit-scrollbar {
+            display: none;
+          }
+          .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+        `}} />
+
+        {/* The Professional Carousel Slider */}
         <motion.div
           variants={container}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
+          className="flex overflow-x-auto gap-10 snap-x snap-mandatory pb-16 pt-4 px-4 -mx-4 no-scrollbar items-stretch"
+          ref={sliderRef}
         >
-          {matches.map((match) => (
+          {displayMatches.map((match) => (
             <motion.div
               key={match.id}
               variants={item}
               onClick={() => setSelectedMatch(match)}
-              className="group relative flex flex-col bg-card border border-border-subtle rounded-[60px] cursor-pointer hover:translate-y-[-10px] transition-all duration-500 overflow-hidden shadow-premium hover:shadow-[0_40px_80px_rgba(0,0,0,0.15)] dark:hover:shadow-[0_40px_80px_rgba(0,0,0,0.4)]"
+              className="group relative flex flex-col bg-card border border-border-subtle rounded-[60px] cursor-pointer hover:-translate-y-4 transition-all duration-500 overflow-hidden min-w-[90vw] md:min-w-[420px] snap-center shrink-0"
             >
               {/* Card Header Background */}
-              <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-rm-gold/5 dark:from-rm-gold/[0.03] to-transparent pointer-events-none" />
+              <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-rm-gold/5 dark:from-rm-gold/[0.03] to-transparent pointer-events-none transition-colors group-hover:from-rm-gold/10" />
 
-              <div className="p-12 flex flex-col gap-10 relative z-10">
-                <div className="flex justify-between items-center">
-                  <span className="px-5 py-2 bg-foreground/5 rounded-full text-[10px] font-black tracking-widest text-text-secondary uppercase italic group-hover:bg-rm-gold group-hover:text-black transition-all">
-                    {match.competition}
-                  </span>
-                  {match.isLive && (
-                    <div className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                      <span className="text-[10px] font-black text-red-500 uppercase italic">Live Now</span>
+              <div className="p-10 md:p-12 flex flex-col h-full gap-10 relative z-10 justify-between">
+                <div>
+                  <div className="flex justify-between items-center mb-8">
+                    <span className="px-5 py-2 bg-foreground/5 rounded-full text-[9px] font-black tracking-[0.2em] text-text-secondary uppercase italic group-hover:bg-rm-gold group-hover:text-black transition-all max-w-[200px] truncate text-center">
+                      {match.competition}
+                    </span>
+                    {match.isLive && (
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                        <span className="text-[10px] font-black text-red-500 uppercase italic">Live Now</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex flex-col items-center gap-4 flex-1">
+                      <div className="relative w-20 h-20 md:w-24 md:h-24 p-4 bg-background rounded-[35px] shadow-[inset_0_2px_10px_rgba(0,0,0,0.05)] group-hover:scale-110 transition-transform duration-700 border border-border-subtle group-hover:border-rm-gold/20 flex items-center justify-center">
+                        <img src={match.homeLogo} alt={match.homeTeam} className="w-full h-full object-contain p-2 drop-shadow-md" />
+                      </div>
+                      <h4 className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] text-text-primary text-center leading-snug line-clamp-2">{match.homeTeam}</h4>
                     </div>
-                  )}
+
+                    <div className="flex flex-col items-center flex-none">
+                      <div className={`text-2xl md:text-3xl font-black italic tracking-tighter transition-all duration-500 ${match.score === 'VS' ? 'text-foreground/10 group-hover:text-rm-gold opacity-50' : 'text-foreground group-hover:text-gold scale-110'}`}>
+                        {match.score}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-4 flex-1">
+                      <div className="relative w-20 h-20 md:w-24 md:h-24 p-4 bg-background rounded-[35px] shadow-[inset_0_2px_10px_rgba(0,0,0,0.05)] group-hover:scale-110 transition-transform duration-700 border border-border-subtle group-hover:border-rm-gold/20 flex items-center justify-center">
+                        <img src={match.awayLogo} alt={match.awayTeam} className="w-full h-full object-contain p-2 drop-shadow-md" />
+                      </div>
+                      <h4 className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] text-text-primary text-center leading-snug line-clamp-2">{match.awayTeam}</h4>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex flex-col items-center gap-4 flex-1">
-                    <div className="relative w-24 h-24 p-5 bg-background rounded-[35px] shadow-sm group-hover:scale-110 transition-transform duration-700 border border-border-subtle group-hover:border-rm-gold/20">
-                      <Image src={match.homeLogo} alt={match.homeTeam} fill className="object-contain p-5" />
-                    </div>
-                    <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-text-primary text-center leading-none">{match.homeTeam}</h4>
-                  </div>
-
-                  <div className="flex flex-col items-center flex-none">
-                    <div className={`text-6xl font-black italic tracking-tighter transition-all duration-500 ${match.score === 'VS' ? 'text-foreground/10 group-hover:text-rm-gold opacity-50' : 'text-foreground group-hover:text-gold scale-110'}`}>
-                      {match.score}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col items-center gap-4 flex-1">
-                    <div className="relative w-24 h-24 p-5 bg-background rounded-[35px] shadow-sm group-hover:scale-110 transition-transform duration-700 border border-border-subtle group-hover:border-rm-gold/20">
-                      <Image src={match.awayLogo} alt={match.awayTeam} fill className="object-contain p-5" />
-                    </div>
-                    <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-text-primary text-center leading-none">{match.awayTeam}</h4>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-6 pt-6 border-t border-border-subtle group-hover:border-rm-gold/10 transition-colors">
+                <div className="flex flex-col gap-6 pt-6 border-t border-border-subtle group-hover:border-rm-gold/20 transition-colors mt-auto">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3 text-text-secondary italic">
                       <MapPin className="w-4 h-4 text-rm-gold" />
-                      <span className="text-xs uppercase font-black tracking-widest truncate max-w-[150px]">{match.stadium}</span>
+                      <span className="text-[10px] uppercase font-black tracking-[0.2em] truncate max-w-[150px]">{match.stadium}</span>
                     </div>
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-rm-gold/10 rounded-lg">
-                      <Clock className="w-3.5 h-3.5 text-rm-gold" />
-                      <span className="text-[10px] font-black text-rm-gold uppercase italic">{match.time}</span>
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-rm-gold/10 rounded-lg group-hover:bg-rm-gold group-hover:text-rm-blue-dark transition-colors duration-500">
+                      <Clock className="w-3.5 h-3.5 text-inherit group-hover:text-rm-blue-dark" />
+                      <span className="text-[10px] font-black text-rm-gold uppercase italic group-hover:text-rm-blue-dark">{match.time}</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-black text-text-primary uppercase italic tracking-tighter">{match.date}</span>
+                    <span className="text-sm font-black text-text-primary uppercase italic tracking-[0.1em]">{match.date}</span>
                     <div className="flex items-center gap-2 group/btn">
-                      <span className="text-[9px] font-bold text-rm-gold uppercase tracking-[0.3em] opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">Match Center</span>
-                      <div className="p-2 border border-border-subtle rounded-full group-hover:bg-rm-gold group-hover:border-rm-gold transition-all">
+                      <span className="text-[9px] font-bold text-rm-gold uppercase tracking-[0.3em] opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">Details</span>
+                      <div className="p-2 border border-border-subtle rounded-full bg-card group-hover:bg-rm-gold group-hover:border-rm-gold shadow-[0_4px_10px_rgba(0,0,0,0.05)] transition-all">
                         <ArrowRight className="w-4 h-4 text-text-secondary group-hover:text-rm-blue-dark" />
                       </div>
                     </div>
@@ -231,8 +302,8 @@ export const MatchList = () => {
               </div>
 
               {/* Unique Ticket Design Detail */}
-              <div className="absolute top-1/2 -left-3 w-6 h-12 bg-background border border-border-subtle rounded-full -translate-y-1/2 pointer-events-none" />
-              <div className="absolute top-1/2 -right-3 w-6 h-12 bg-background border border-border-subtle rounded-full -translate-y-1/2 pointer-events-none" />
+              <div className="absolute top-1/2 -left-3 w-6 h-12 bg-background border border-border-subtle rounded-full -translate-y-1/2 pointer-events-none shadow-[inset_-4px_0_10px_rgba(0,0,0,0.03)]" />
+              <div className="absolute top-1/2 -right-3 w-6 h-12 bg-background border border-border-subtle rounded-full -translate-y-1/2 pointer-events-none shadow-[inset_4px_0_10px_rgba(0,0,0,0.03)]" />
             </motion.div>
           ))}
         </motion.div>
@@ -249,43 +320,44 @@ export const MatchList = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedMatch(null)}
-              className="absolute inset-0 bg-[color:var(--hero-overlay-strong)] backdrop-blur-xl"
+              className="absolute inset-0 bg-[color:var(--hero-overlay-strong)] backdrop-blur-2xl"
             />
 
             {/* 🔥 Modal */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 40 }}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 40 }}
-              transition={{ duration: 0.4 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
               className="
                 relative z-[101] w-full max-w-5xl
-                max-h-[90vh] overflow-y-auto
+                max-h-[90vh] overflow-y-auto no-scrollbar
                 rounded-[40px] md:rounded-[60px]
                 bg-card border border-border-subtle
-                shadow-[0_30px_100px_rgba(0,0,0,0.6)]
+                shadow-[0_40px_100px_rgba(0,0,0,0.8)]
               "
             >
               {/* Background decor */}
               <div className="absolute inset-0 opacity-10 pointer-events-none bg-[url('/Images/Santiago.webp')] bg-cover bg-center mix-blend-overlay" />
+              <div className="absolute top-0 inset-x-0 h-96 bg-gradient-to-b from-rm-gold/[0.05] to-transparent pointer-events-none" />
 
-              <div className="relative p-6 md:p-12 lg:p-16 flex flex-col items-center">
+              <div className="relative p-8 md:p-12 lg:p-16 flex flex-col items-center">
 
                 {/* ❌ Close */}
-                <div className="absolute top-6 right-6">
+                <div className="absolute top-6 right-6 md:top-10 md:right-10">
                   <button
                     onClick={() => setSelectedMatch(null)}
-                    className="p-3 rounded-full text-text-secondary hover:text-text-primary hover:bg-white/10 transition-all group"
+                    className="p-4 rounded-full text-text-secondary bg-background/50 backdrop-blur-xl border border-border-subtle hover:text-text-primary hover:bg-white/10 transition-all group shadow-xl"
                   >
                     <X className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
                   </button>
                 </div>
 
                 {/* 🏆 Competition */}
-                <div className="flex items-center gap-3 px-5 py-2 mb-10 rounded-full 
-                bg-rm-gold/10 border border-rm-gold/30 text-rm-gold shadow-gold">
-                  <TrophyIcon className="w-4 h-4" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] italic">
+                <div className="flex items-center gap-3 px-6 py-3 mb-12 rounded-full 
+                bg-rm-gold/10 border border-rm-gold/30 text-rm-gold shadow-[0_0_30px_rgba(238,197,93,0.15)] backdrop-blur-xl mt-4">
+                  <TrophyIcon className="w-5 h-5" />
+                  <span className="text-[11px] font-black uppercase tracking-[0.3em] italic">
                     {selectedMatch.competition}
                   </span>
                 </div>
@@ -295,63 +367,63 @@ export const MatchList = () => {
 
                   {/* Home */}
                   <div className="flex flex-col items-center gap-6 flex-1">
-                    <div className="relative w-32 h-32 md:w-48 md:h-48 p-6 
-                    bg-white/5 rounded-[30px] backdrop-blur-xl 
-                    border border-border-subtle">
-                      <Image src={selectedMatch.homeLogo} alt="" fill className="object-contain p-4" />
+                    <div className="relative w-40 h-40 md:w-56 md:h-56 p-6 
+                    bg-white/5 rounded-[40px] backdrop-blur-2xl 
+                    border border-border-subtle shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
+                      <img src={selectedMatch.homeLogo} alt="" className="w-full h-full object-contain p-2 drop-shadow-2xl" />
                     </div>
-                    <span className="text-xl md:text-2xl font-black uppercase italic text-text-primary text-center">
+                    <span className="text-2xl md:text-3xl font-black uppercase italic text-text-primary text-center max-w-[200px]">
                       {selectedMatch.homeTeam}
                     </span>
                   </div>
 
                   {/* Score */}
                   <div className="flex flex-col items-center gap-4">
-                    <div className="text-5xl md:text-7xl font-black italic text-text-primary">
+                    <div className="text-6xl md:text-8xl font-black italic text-text-primary drop-shadow-[0_0_20px_rgba(255,255,255,0.1)]">
                       {selectedMatch.score}
                     </div>
 
                     {selectedMatch.isLive ? (
-                      <div className="px-4 py-2 bg-red-600 rounded-full flex items-center gap-2 animate-pulse">
-                        <Timer className="w-4 h-4 text-white" />
-                        <span className="text-[10px] font-black text-white uppercase">
-                          Live
+                      <div className="px-6 py-2.5 bg-red-600 rounded-full flex items-center gap-3 animate-pulse shadow-[0_0_30px_rgba(220,38,38,0.5)]">
+                        <Timer className="w-5 h-5 text-white" />
+                        <span className="text-[12px] font-black text-white uppercase tracking-widest">
+                          Live Action
                         </span>
                       </div>
                     ) : (
-                      <span className="text-[10px] uppercase tracking-widest text-rm-gold/60">
-                        Full Time
+                      <span className="text-[11px] font-black uppercase tracking-[0.4em] text-rm-gold/60">
+                        {selectedMatch.score !== 'VS' ? 'Full Time' : 'Upcoming'}
                       </span>
                     )}
                   </div>
 
                   {/* Away */}
                   <div className="flex flex-col items-center gap-6 flex-1">
-                    <div className="relative w-32 h-32 md:w-48 md:h-48 p-6 
-                    bg-white/5 rounded-[30px] backdrop-blur-xl 
-                    border border-border-subtle">
-                      <Image src={selectedMatch.awayLogo} alt="" fill className="object-contain p-4" />
+                    <div className="relative w-40 h-40 md:w-56 md:h-56 p-6 
+                    bg-white/5 rounded-[40px] backdrop-blur-2xl 
+                    border border-border-subtle shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
+                      <img src={selectedMatch.awayLogo} alt="" className="w-full h-full object-contain p-2 drop-shadow-2xl" />
                     </div>
-                    <span className="text-xl md:text-2xl font-black uppercase italic text-text-primary text-center">
+                    <span className="text-2xl md:text-3xl font-black uppercase italic text-text-primary text-center max-w-[200px]">
                       {selectedMatch.awayTeam}
                     </span>
                   </div>
                 </div>
 
                 {/* 📊 Details */}
-                <div className="w-full mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 border-t border-border-subtle pt-8">
+                <div className="w-full mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 border-t border-border-subtle pt-12">
                   {[
                     { icon: MapPin, label: "Arena", value: selectedMatch.stadium },
                     { icon: Calendar, label: "Kickoff", value: selectedMatch.date },
-                    { icon: User, label: "Official", value: "A. Taylor" },
-                    { icon: Ticket, label: "Attendance", value: "81,044" }
+                    { icon: User, label: "Official", value: "TBA" },
+                    { icon: Ticket, label: "Est. Matchday", value: "Available" }
                   ].map((detail, idx) => (
-                    <div key={idx} className="flex flex-col items-center text-center gap-1">
-                      <detail.icon className="w-5 h-5 text-rm-gold opacity-60" />
-                      <span className="text-[9px] uppercase tracking-widest text-text-secondary">
+                    <div key={idx} className="flex flex-col items-center text-center gap-2 p-4 rounded-[20px] hover:bg-foreground/[0.02] transition-colors">
+                      <detail.icon className="w-6 h-6 text-rm-gold opacity-80 mb-2" />
+                      <span className="text-[10px] font-black uppercase tracking-[0.3em] text-text-secondary">
                         {detail.label}
                       </span>
-                      <span className="text-sm font-bold text-text-primary">
+                      <span className="text-base font-black text-text-primary italic">
                         {detail.value}
                       </span>
                     </div>
@@ -359,17 +431,17 @@ export const MatchList = () => {
                 </div>
 
                 {/* 🎯 Actions */}
-                <div className="flex flex-col sm:flex-row gap-4 mt-10 w-full justify-center">
-                  <button className="flex-1 max-w-[260px] py-4 bg-rm-gold text-rm-blue-dark 
-                  font-bold uppercase text-xs tracking-widest rounded-xl 
-                  hover:bg-white transition-all active:scale-95 flex items-center justify-center gap-2">
-                    Watch Highlights <ChevronRight className="w-4 h-4" />
+                <div className="flex flex-col md:flex-row gap-6 mt-16 w-full justify-center">
+                  <button className="flex-1 max-w-[320px] py-6 bg-rm-gold text-rm-blue-dark 
+                  font-black uppercase text-[11px] tracking-[0.3em] rounded-2xl shadow-[0_10px_30px_rgba(238,197,93,0.3)]
+                  hover:bg-white transition-all active:scale-95 flex items-center justify-center gap-4 group">
+                    Match Center <ArrowUpRight className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                   </button>
 
-                  <button className="flex-1 max-w-[260px] py-4 bg-white/5 border border-border-subtle 
-                  text-text-primary font-bold uppercase text-xs tracking-widest rounded-xl 
-                  hover:bg-white/10 transition-all flex items-center justify-center gap-2">
-                    Share <Share2 className="w-4 h-4" />
+                  <button className="flex-1 max-w-[320px] py-6 bg-card border border-border-subtle shadow-xl
+                  text-text-primary font-black uppercase text-[11px] tracking-[0.3em] rounded-2xl 
+                  hover:bg-foreground/5 hover:border-rm-gold/40 transition-all active:scale-95 flex items-center justify-center gap-4 group">
+                    Share Fixture <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
                   </button>
                 </div>
 

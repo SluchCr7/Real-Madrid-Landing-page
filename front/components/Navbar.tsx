@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Menu, Moon, Sun, X } from "lucide-react";
 import { RMLogo } from "./RMLogo";
 import { useDarkMode } from "../hooks/useDarkMode";
+import { useAuth } from "@/hooks/useAuth";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -11,6 +12,7 @@ import { useRouter } from "next/navigation";
 const navLinks = [
   { name: "Squad", href: "/squad" },
   { name: "Matches", href: "/matches" },
+  { name: "Standings", href: "/standings" },
   { name: "News", href: "/news" },
   { name: "Stadium", href: "/stadium" },
   { name: "Trophies", href: "/trophies" },
@@ -20,6 +22,7 @@ const navLinks = [
 
 export const Navbar = () => {
   const { isDark, toggle } = useDarkMode();
+  const { user, logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
@@ -69,7 +72,22 @@ export const Navbar = () => {
             ))}
           </ul>
 
-          <div className="flex items-center gap-6 pl-12 border-l border-foreground/10">
+          <div className="flex items-center gap-6 pl-8 border-l border-foreground/10">
+            {user ? (
+                <div className="flex items-center gap-4 bg-foreground/5 py-2 px-4 rounded-full border border-foreground/10">
+                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${textColorClass} opacity-70`}>{user.name}</span>
+                    <div className="w-[1px] h-3 bg-foreground/20"></div>
+                    <button onClick={logout} className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${textColorClass} hover:text-rm-gold`}>
+                        Logout
+                    </button>
+                </div>
+            ) : (
+                <Link href="/login" className={`flex items-center text-xs font-black uppercase tracking-[0.4em] italic relative group ${textColorClass} hover:text-rm-gold`}>
+                    Login
+                    <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-rm-gold transition-all duration-500 group-hover:w-full" />
+                </Link>
+            )}
+
             <button
               onClick={toggle}
               className={`p-2 transition-colors ${textColorClass} hover:text-rm-gold`}
@@ -141,6 +159,25 @@ export const Navbar = () => {
                     </Link>
                   </motion.li>
                 ))}
+                
+                <div className="h-[1px] w-full bg-white/10 my-4" />
+                
+                {user ? (
+                   <motion.li initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} whileHover={{ x: 10 }} className="group">
+                        <span className="text-sm font-bold uppercase text-white/50 mb-2 block tracking-widest flex items-center gap-2">
+                           <span className="w-2 h-2 rounded-full bg-rm-gold"></span> Welcome, {user.name}
+                        </span>
+                        <button onClick={() => { logout(); setIsOpen(false); }} className="text-4xl font-black uppercase text-white hover:text-rm-gold transition-all duration-300 group-hover:italic text-left">
+                            Logout
+                        </button>
+                   </motion.li>
+                ) : (
+                    <motion.li initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} whileHover={{ x: 10 }} className="group">
+                        <Link href="/login" onClick={() => setIsOpen(false)} className="text-4xl font-black uppercase text-white hover:text-rm-gold transition-all duration-300 group-hover:italic">
+                            Sign In / Register
+                        </Link>
+                    </motion.li>
+                )}
               </ul>
 
               <div className="mt-auto flex flex-col gap-10 pt-10">

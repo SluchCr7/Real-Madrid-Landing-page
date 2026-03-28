@@ -67,12 +67,7 @@ const useMatches = () => {
             setError(null);
             try {
                 const response = await axios.get<{ matches: Match[] }>(
-                    "https://api.football-data.org/v4/teams/86/matches",
-                    {
-                        headers: {
-                            "X-Auth-Token": process.env.NEXT_PUBLIC_API_TOKEN,
-                        },
-                    }
+                    `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/football/matches`
                 );
 
                 const apiMatches: Match[] = response.data.matches || [];

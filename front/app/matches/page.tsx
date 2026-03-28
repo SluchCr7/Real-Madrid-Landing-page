@@ -142,7 +142,7 @@ export default function MatchesPage() {
               initial={{ opacity: 0, scale: 0.9, y: 40 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 40 }}
-              className="relative z-[101] w-full max-w-4xl bg-card border border-border-subtle rounded-[60px] overflow-hidden shadow-2xl"
+              className="relative z-[101] max-h-[90vh] w-full max-w-4xl bg-card border border-border-subtle rounded-[60px] overflow-hidden shadow-2xl"
             >
               <div className="p-12 md:p-16 flex flex-col items-center">
                 <button onClick={() => setSelectedMatch(null)} className="absolute top-8 right-8 p-4 rounded-full bg-foreground/5 hover:bg-rm-gold transition-all group">

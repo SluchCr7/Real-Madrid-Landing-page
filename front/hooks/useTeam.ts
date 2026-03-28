@@ -51,11 +51,7 @@ const useTeam = () => {
                         if (!res.ok) throw new Error("Failed to load local data");
                         return res.json() as Promise<Player[]>;
                     }),
-                    axios.get("https://api.football-data.org/v4/teams/86", {
-                        headers: {
-                            "X-Auth-Token": process.env.NEXT_PUBLIC_API_TOKEN,
-                        },
-                    }).catch((err) => {
+                    axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/football/team`).catch((err) => {
                         console.warn("API restricted or failed, using pure local data fallback.", err);
                         return null;
                     })
