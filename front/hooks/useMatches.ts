@@ -30,8 +30,16 @@ export interface Referee {
     nationality?: string;
 }
 
+export interface Area {
+    id: number;
+    name: string;
+    code: string;
+    flag: string;
+}
+
 export interface Match {
     id: number;
+    area: Area;
     utcDate: string;
     status: string;
     matchday: number;
