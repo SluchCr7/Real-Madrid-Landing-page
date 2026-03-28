@@ -8,6 +8,12 @@ interface User {
     name: string;
     email: string;
     token: string;
+    profileName?: string;
+    profilePhoto?: {
+        url: string;
+        publicId?: string | null;
+        isSensitive?: boolean;
+    };
 }
 
 interface AuthContextType {

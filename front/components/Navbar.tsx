@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Menu, Moon, Sun, X } from "lucide-react";
+import { Menu, Moon, Sun, X, LogOut, User as UserIcon, Settings, ChevronDown } from "lucide-react";
 import { RMLogo } from "./RMLogo";
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useAuth } from "@/hooks/useAuth";
@@ -25,6 +25,7 @@ export const Navbar = () => {
   const { user, logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -40,9 +41,9 @@ export const Navbar = () => {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 flex flex-row items-center justify-between px-6 py-4 md:px-20 lg:px-40 ${isScrolled
-            ? "bg-background/80 backdrop-blur-xl border-b border-border-subtle shadow-premium py-3"
-            : "bg-transparent py-8"
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 flex flex-row items-center justify-between px-6 py-4 md:px-16 lg:px-20 ${isScrolled
+          ? "bg-background/80 backdrop-blur-xl border-b border-border-subtle shadow-premium py-3"
+          : "bg-transparent py-8"
           }`}
       >
         <motion.div
@@ -74,18 +75,85 @@ export const Navbar = () => {
 
           <div className="flex items-center gap-6 pl-8 border-l border-foreground/10">
             {user ? (
-                <div className="flex items-center gap-4 bg-foreground/5 py-2 px-4 rounded-full border border-foreground/10">
-                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${textColorClass} opacity-70`}>{user.name}</span>
-                    <div className="w-[1px] h-3 bg-foreground/20"></div>
-                    <button onClick={logout} className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors ${textColorClass} hover:text-rm-gold`}>
-                        Logout
-                    </button>
-                </div>
+              <div className="relative">
+                <motion.div
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  whileHover={{ scale: 1.05 }}
+                  className="relative w-10 h-10 rounded-full cursor-pointer p-[2px] bg-gradient-to-tr from-rm-gold via-rm-gold/20 to-rm-gold border border-rm-gold/40 shadow-premium"
+                >
+                  <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-background">
+                    <Image
+                      src={user.profilePhoto?.url || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"}
+                      alt={user.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                </motion.div>
+
+                {/* Professional User Dropdown */}
+                <AnimatePresence>
+                  {isUserMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                      className="absolute right-0 mt-4 w-72 bg-card/95 backdrop-blur-xl border border-border-subtle rounded-[32px] shadow-2xl overflow-hidden z-[60]"
+                    >
+                      {/* Header Section */}
+                      <div className="bg-gradient-to-br from-rm-blue/10 to-rm-gold/10 p-6 border-b border-border-subtle">
+                        <div className="flex items-center gap-4">
+                          <div className="relative w-12 h-12 rounded-2xl overflow-hidden border-2 border-rm-gold/40 shadow-lg">
+                            <Image
+                              src={user.profilePhoto?.url || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"}
+                              alt={user.name}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-sm font-black uppercase text-foreground leading-none mb-1">{user.name}</span>
+                            <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-widest">Official Madridista</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Menu Items */}
+                      <div className="p-4 flex flex-col gap-1">
+                        {[
+                          { icon: UserIcon, label: "Profile", href: "/profile" },
+                          { icon: Settings, label: "Settings", href: "/settings" },
+                        ].map((item, i) => (
+                          <Link
+                            key={i}
+                            href={item.href}
+                            onClick={() => setIsUserMenuOpen(false)}
+                            className="flex items-center gap-4 p-4 rounded-2xl hover:bg-foreground/[0.03] transition-colors group"
+                          >
+                            <item.icon className="w-4 h-4 text-foreground/40 group-hover:text-rm-gold transition-colors" />
+                            <span className="text-xs font-black uppercase tracking-widest text-foreground group-hover:text-rm-gold transition-colors">{item.label}</span>
+                          </Link>
+                        ))}
+
+                        <div className="h-[1px] w-full bg-border-subtle my-2" />
+
+                        <button
+                          onClick={() => { logout(); setIsUserMenuOpen(false); }}
+                          className="flex items-center gap-4 p-4 rounded-2xl hover:bg-red-500/5 transition-colors group w-full text-left"
+                        >
+                          <LogOut className="w-4 h-4 text-red-500/60 group-hover:text-red-500 transition-colors" />
+                          <span className="text-xs font-black uppercase tracking-widest text-red-500/60 group-hover:text-red-500 transition-colors">Sign Out</span>
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             ) : (
-                <Link href="/login" className={`flex items-center text-xs font-black uppercase tracking-[0.4em] italic relative group ${textColorClass} hover:text-rm-gold`}>
-                    Login
-                    <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-rm-gold transition-all duration-500 group-hover:w-full" />
-                </Link>
+              <Link href="/login" className={`flex items-center text-xs font-black uppercase tracking-[0.4em] italic relative group ${textColorClass} hover:text-rm-gold`}>
+                Login
+                <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-rm-gold transition-all duration-500 group-hover:w-full" />
+              </Link>
             )}
 
             <button
@@ -159,24 +227,54 @@ export const Navbar = () => {
                     </Link>
                   </motion.li>
                 ))}
-                
+
                 <div className="h-[1px] w-full bg-white/10 my-4" />
-                
+
                 {user ? (
-                   <motion.li initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} whileHover={{ x: 10 }} className="group">
-                        <span className="text-sm font-bold uppercase text-white/50 mb-2 block tracking-widest flex items-center gap-2">
-                           <span className="w-2 h-2 rounded-full bg-rm-gold"></span> Welcome, {user.name}
-                        </span>
-                        <button onClick={() => { logout(); setIsOpen(false); }} className="text-4xl font-black uppercase text-white hover:text-rm-gold transition-all duration-300 group-hover:italic text-left">
-                            Logout
+                  <motion.li initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} whileHover={{ x: 10 }} className="group">
+                    <div className="flex flex-col gap-6 mb-10 pb-10 border-b border-white/10">
+                      <div className="relative w-24 h-24 rounded-[32px] overflow-hidden border-2 border-rm-gold/40 shadow-2xl p-[3px] bg-gradient-to-tr from-rm-gold via-transparent to-rm-gold">
+                        <div className="relative w-full h-full rounded-[28px] overflow-hidden border-4 border-rm-blue-dark">
+                          <Image
+                            src={user.profilePhoto?.url || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"}
+                            alt={user.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold uppercase text-rm-gold tracking-[0.4em] mb-2 italic">Official Madridista</span>
+                        <span className="text-5xl font-black uppercase text-white leading-none tracking-tight italic">{user.name}</span>
+                      </div>
+
+                      <div className="flex flex-col gap-4 mt-4">
+                        <button className="flex items-center gap-4 text-white/40 hover:text-rm-gold transition-colors font-black uppercase tracking-widest text-sm italic">
+                          <UserIcon className="w-5 h-5" /> View Profile
                         </button>
-                   </motion.li>
+                        <button className="flex items-center gap-4 text-white/40 hover:text-rm-gold transition-colors font-black uppercase tracking-widest text-sm italic">
+                          <Settings className="w-5 h-5" /> Account Settings
+                        </button>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => { logout(); setIsOpen(false); }}
+                      className="flex items-center gap-6 p-6 rounded-[32px] bg-red-500/10 border border-red-500/20 w-full hover:bg-red-500 hover:text-white transition-all group shadow-xl"
+                    >
+                      <LogOut className="w-8 h-8 text-red-500 group-hover:text-white transition-colors" />
+                      <div className="flex flex-col items-start translate-y-[2px]">
+                        <span className="text-[10px] uppercase font-black tracking-[0.4em] leading-none mb-1 opacity-60">Session</span>
+                        <span className="text-2xl font-black uppercase leading-none italic">Sign Out</span>
+                      </div>
+                    </button>
+                  </motion.li>
                 ) : (
-                    <motion.li initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} whileHover={{ x: 10 }} className="group">
-                        <Link href="/login" onClick={() => setIsOpen(false)} className="text-4xl font-black uppercase text-white hover:text-rm-gold transition-all duration-300 group-hover:italic">
-                            Sign In / Register
-                        </Link>
-                    </motion.li>
+                  <motion.li initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} whileHover={{ x: 10 }} className="group">
+                    <Link href="/login" onClick={() => setIsOpen(false)} className="text-4xl font-black uppercase text-white hover:text-rm-gold transition-all duration-300 group-hover:italic">
+                      Sign In / Register
+                    </Link>
+                  </motion.li>
                 )}
               </ul>
 
