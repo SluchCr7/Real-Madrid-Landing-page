@@ -12,12 +12,18 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(cors({ origin: process.env.FRONT_END_LINK, credentials: true })); // Change if your frontend runs on a diff port
+app.use(cors({
+    origin: process.env.FRONT_END_LINK,
+    credentials: true
+}));
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Routes
+app.get('/', (req, res) => {
+    res.send('Hello World!');
+});
 app.use('/api/users', require('./routes/authRoutes'));
 app.use('/api/football', require('./routes/footballRoutes'));
 app.use('/api/news', require('./routes/newsRoutes'));

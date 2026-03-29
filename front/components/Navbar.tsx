@@ -17,7 +17,6 @@ const navLinks = [
   { name: "Stadium", href: "/stadium" },
   { name: "Trophies", href: "/trophies" },
   { name: "About", href: "/about" },
-  { name: "Contact", href: "/contact" },
 ];
 
 export const Navbar = () => {

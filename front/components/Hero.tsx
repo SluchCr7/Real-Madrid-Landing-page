@@ -16,6 +16,14 @@ const panels = [
   },
   {
     id: 2,
+    title: "COURT KINGS",
+    subtitle: "11 EuroLeagues",
+    description: "The most successful basketball club in Europe. Unmatched royal dominance on the court.",
+    image: "https://images.unsplash.com/photo-1504450758481-7338eba7524a?q=80&w=2600&auto=format&fit=crop", 
+    color: "from-[#050b14] to-black",
+  },
+  {
+    id: 3,
     title: "BERNABÉU",
     subtitle: "The New Colosseum",
     description: "Experience the most advanced stadium in world football. The heartbeat of Madrid.",
@@ -23,7 +31,7 @@ const panels = [
     color: "from-rm-blue-dark to-black",
   },
   {
-    id: 3,
+    id: 4,
     title: "THE SQUAD",
     subtitle: "A New Galaxy",
     description: "The finest talent on the planet assembled under one badge. Meet the 24/25 team.",

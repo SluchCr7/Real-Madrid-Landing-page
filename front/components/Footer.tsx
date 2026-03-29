@@ -18,7 +18,14 @@ const footerData = {
     { name: "First team", href: "/squad" },
     { name: "Matches", href: "/matches" },
     { name: "Academy", href: "#" },
-    { name: "Woman football", href: "#" }
+    { name: "Woman football", href: "#" },
+    { name: "Legends", href: "/legends" }
+  ],
+  Basketball: [
+    { name: "First team", href: "/basketball" },
+    { name: "Champions", href: "/basketball" },
+    { name: "History", href: "/basketball" },
+    { name: "Tickets", href: "#" }
   ],
   "The Club": [
     { name: "Values", href: "/about" },
